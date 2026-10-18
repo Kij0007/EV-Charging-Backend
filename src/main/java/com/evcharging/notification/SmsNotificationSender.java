@@ -1,11 +1,14 @@
 package com.evcharging.notification;
 
-public class SmsNotificationSender implements NotificationSender {
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-	@Override
-	public void send(String message) {
-		
-		System.out.println("Sms sent : " + message);
-		
-	}
+/** Development mock only. No SMS is sent; message contents are never logged. */
+public class SmsNotificationSender implements NotificationSender {
+    private static final Logger log = LoggerFactory.getLogger(SmsNotificationSender.class);
+
+    @Override
+    public void send(String message) {
+        log.info("Mock SMS notification accepted; no SMS was sent");
+    }
 }

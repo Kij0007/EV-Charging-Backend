@@ -1,0 +1,56 @@
+# yaml-language-server: $schema=https://render.com/schema/render.yaml.json
+# Free demonstration only: review plans and usage limits before confirming setup.
+# Names deliberately differ from the existing local EVCHARGING database.
+services:
+  - type: web
+    name: voltway-public-demo
+    runtime: docker
+    plan: free
+    region: singapore
+    numInstances: 1
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    autoDeployTrigger: "off"
+    healthCheckPath: /actuator/health
+    maxShutdownDelaySeconds: 30
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod,render
+      - key: SERVER_ADDRESS
+        value: 0.0.0.0
+      - key: APP_DEMO_MODE
+        value: "true"
+      - key: DB_HOST
+        fromDatabase:
+          name: voltway-public-demo-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: voltway-public-demo-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: voltway-public-demo-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: voltway-public-demo-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: voltway-public-demo-db
+          property: password
+      - key: APP_ADMIN_EMAIL
+        sync: false
+      - key: APP_ADMIN_PASSWORD
+        sync: false
+
+databases:
+  - name: voltway-public-demo-db
+    plan: free
+    region: singapore
+    databaseName: evcharging_demo
+    user: evcharging_demo
+    postgresMajorVersion: "17"
+    # Same-region app uses the internal route; no public DB access by default.
+    ipAllowList: []

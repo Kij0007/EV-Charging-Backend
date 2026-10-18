@@ -1,12 +1,24 @@
 package com.evcharging.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-
 import jakarta.persistence.*;
+import java.time.Instant;
+import org.hibernate.annotations.Check;
 
 @Entity
-@Table(name = "Booking")
+@Table(name = "Booking", indexes = {
+        @Index(name = "idx_booking_user", columnList = "user_Id"),
+        @Index(name = "idx_booking_station", columnList = "station_Id")
+})
+@Check(constraints = "amount >= 0 and booking_status in ('Confirmed', 'Cancelled', 'Completed')")
 public class Booking {
+
+    public static final String CONFIRMED = "Confirmed";
+    public static final String CANCELLED = "Cancelled";
+    public static final String COMPLETED = "Completed";
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private Instant createdAt = Instant.now();
+
+    public Instant getCreatedAt() { return createdAt; }
 	
 	public Booking() {
 		// TODO Auto-generated constructor stub
@@ -22,17 +34,28 @@ public class Booking {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_Id", nullable = false)
-	@JsonBackReference
 	private  User user;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "station_Id", nullable = false)
 	
 	private ChargingStation station ;
+	@Column(nullable = false)
 	private String bookingStatus;
+	@Column(nullable = false)
 	private double amount;
+	@Column(name = "request_key", length = 64, unique = true)
+	private String requestKey;
+
+    public String getRequestKey() {
+        return requestKey;
+    }
+
+    public void setRequestKey(String requestKey) {
+        this.requestKey = requestKey;
+    }
 	public Long getId() {
 		return id;
 	}
