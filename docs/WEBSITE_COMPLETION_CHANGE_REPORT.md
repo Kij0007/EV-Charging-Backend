@@ -975,7 +975,7 @@ server.shutdown=graceful
 spring.lifecycle.timeout-per-shutdown-phase=20s
 ```
 
-Render is configured to allow 30 seconds for shutdown, giving the application time to finish work within its 20-second lifecycle budget before a forced termination. This does not promise uninterrupted service during free-plan sleep, maintenance or database expiry.
+The application requests a 20-second Spring graceful-shutdown budget. The Render Free plan uses provider-controlled termination timing: the live Blueprint preview rejected a custom shutdown-delay setting, so that setting was removed. No provider grace period has been measured or guaranteed for this deployment. This does not promise uninterrupted service during free-plan sleep, maintenance or database expiry.
 
 **Verification:** focused Git diff/whitespace review. Docker image execution and cloud shutdown timing require their own recorded runtime checks; they are not claimed by reading a Dockerfile.
 
@@ -1028,7 +1028,6 @@ services:
     numInstances: 1
     autoDeployTrigger: "off"
     healthCheckPath: /actuator/health
-    maxShutdownDelaySeconds: 30
 databases:
   - name: voltway-public-demo-db
     plan: free
@@ -1142,8 +1141,21 @@ node --test src/test/frontend/api.test.mjs src/test/frontend/reservation-feedbac
 
 ### Runtime, publishing and live checks
 
+**Live Blueprint preview and correction:** Render rejected the first resource preview with `services[0].maxShutdownDelaySeconds: max shutdown delay is not supported for free tier services`. The earlier official JSON-schema check was a genuine structural pass, but it did not encode this account/plan restriction. The unsupported field was removed from `render.yaml`; both resources remain explicitly Free, and the Spring 20-second graceful-shutdown configuration remains. The guide and WEB-013 now describe provider-controlled, unmeasured termination timing rather than a configured 30-second Render allowance. The corrected file passed the same official-schema/static checks and a focused Git whitespace check. Acceptance of a retried live preview and an actual cloud startup must still be recorded separately; no Java change or new application test result is implied by this configuration-only correction.
+
 <!-- PUBLIC_DEMO_FINAL_STATUS -->
-Local demo-mode runtime and cloud publishing checks are being recorded separately. Source preparation and the successful test suite do not establish an online deployment. There is no verified public website URL at this checkpoint.
+
+The reviewed source was published to `codex/backend-audit-improvements`, with draft pull request [#1](https://github.com/Kij0007/EV-Charging-Backend/pull/1). `main` remains the original commit; there was no merge, force-push or release. The local Git credential helper could not run in this Windows sandbox, so the authenticated GitHub connector published a source snapshot. Its root tree `84f35b2dc5227547f82688c92c4b4b28137fc4bb` exactly matched local commit `87bb6f3`; the GitHub commit was `4b81ef8cba20f9cceb3171c91e6421379578ef82`. Commit identifiers differ because GitHub created new commit metadata. Original local audit/website history remains in the supplied workspace; the original before-snippet hashes in this report refer to that preserved history.
+
+[GitHub Actions run 39102414588](https://github.com/Kij0007/EV-Charging-Backend/actions/runs/39102414588) completed successfully. The actual job logs report **140 tests, zero failures/errors/skips for H2 `clean verify` and 140 for disposable PostgreSQL `clean test`**, plus **17 passing frontend tests** and successful JavaScript syntax checks. These were actual Ubuntu CI jobs, not just YAML validation. Later configuration/documentation-only corrections are tracked separately.
+
+The packaged JAR was also started with demo mode enabled against a newly created agent-owned local database, `evcharging_demo_local_verify`, on PostgreSQL 17 loopback port 55433. The successful scratch launcher explicitly loaded the packaged `application` configuration and supplied `PORT=18083` without `SERVER_PORT` or a command-line server-port override. HTTP checks passed for health UP, exactly the public `{demo,notice}` DTO with `demo:true` and `no-store`, and the website entrypoint. None of these public GETs allocated a session cookie.
+
+The browser showed the persistent demo notice, the notice before the signup form, the correct empty-directory state for a fresh database, and the demo-specific privacy dialog. No real station or user data was imported. Scratch process launches were corrected before this successful check: a detached launch did not survive its tool session, and cleared configuration-name environment variables suppressed the normal application configuration. The final direct foreground launch explicitly restored that configuration. These scratch-launch problems were not source-code changes or successful PORT checks.
+
+The verifier used `-XX:MaxRAM=512m -XX:MaxRAMPercentage=50.0`, plus the intended smaller pool/thread/session settings. This proves a functional local startup with that heap sizing; **it is not an enforced 512 MB operating-system limit, a traffic/load test, or a measured Render memory guarantee**.
+
+At this checkpoint Render account sign-in and repository/branch selection succeeded, but resources have not been created and no public website URL has been verified. The actual Free-plan preview rejected a setting accepted by the general schema; that setting was removed before creation. The pending cloud checks are kept explicit below.
 
 Docker was not found on this machine; no local Docker-image build is claimed. The Docker builder retains `clean verify`, and actual Render build/runtime results must be inspected. Native proxy-boundary tests prove the configured valve behavior; the real Render peer chain, Secure-cookie login, independent-client throttling and hosted database persistence still need a live check.
 

@@ -94,7 +94,9 @@ Only the Render profile processes forwarding headers. Tomcat walks the forwarded
 
 The Free web plan has limited memory/CPU. The image caps the Java heap at 50% of the container limit, leaving room for metaspace, native memory and threads. The Render profile uses at most five database connections, 40 HTTP worker threads, 200 TCP connections and 512 active sessions, with bounded new-session admission. These are conservative configuration choices, not a measured traffic-capacity guarantee. Cloud build/runtime performance must still be observed.
 
-One instance is deliberate: authentication sessions and attempt/session-admission counters live in that process. Restarting resets them; the database still owns accounts, stations, bookings and notifications. Multi-instance scaling requires a deliberate shared-session/edge-abuse design. Render gives shutdown up to 30 seconds; the application drains for up to 20 seconds. Sleep, maintenance or database expiry can still interrupt this free demo.
+One instance is deliberate: authentication sessions and attempt/session-admission counters live in that process. Restarting resets them; the database still owns accounts, stations, bookings and notifications. Multi-instance scaling requires a deliberate shared-session/edge-abuse design. The application requests a 20-second Spring graceful-shutdown budget. The Free plan uses provider-controlled termination timing; no custom shutdown-delay field is submitted, and the actual grace period has not been measured. Sleep, maintenance or database expiry can still interrupt this free demo.
+
+The live Render Blueprint preview rejected `maxShutdownDelaySeconds` because custom shutdown delays are unsupported on the Free tier, even though the official JSON schema accepted the field structurally. The field was removed. Always check the actual account/resource preview as well as local schema validation; a valid YAML schema does not establish plan eligibility or a successful deployment.
 
 ## 8. Keep useful demo data before expiry
 
