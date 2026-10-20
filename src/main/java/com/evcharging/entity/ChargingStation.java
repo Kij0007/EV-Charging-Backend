@@ -1,71 +1,76 @@
 package com.evcharging.entity;
 
-import jakarta.persistence.*;
+import org.hibernate.annotations.Check;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "Charging_Stations")
-
+@Check(constraints = "total_slots > 0 AND avaialable_slots >= 0 AND avaialable_slots <= total_slots")
 public class ChargingStation {
-	
-	
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id ;
-	
-	
-	private String stationName;
-	private String location;
-	private int totalSlots;
-	private int avaialableSlots;
-	
-	public ChargingStation()
-	{
-		
-	}
 
-	public long getId() {
-		return id;
-	}
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	public void setId(long id) {
-		this.id = id;
-	}
+    @Column(nullable = false, length = 150)
+    private String stationName;
 
-	public String getStationName() {
-		return stationName;
-	}
+    @Column(nullable = false, length = 255)
+    private String location;
 
-	public void setStationName(String stationName) {
-		this.stationName = stationName;
-	}
+    @Column(name = "total_slots", nullable = false)
+    private int totalSlots;
 
-	public String getLocation() {
-		return location;
-	}
+    // Preserve the existing API and column spelling for compatibility.
+    @Column(name = "avaialable_slots", nullable = false)
+    private int avaialableSlots;
 
-	public void setLocation(String location) {
-		this.location = location;
-	}
+    public ChargingStation() {
+    }
 
-	public int getTotalSlots() {
-		return totalSlots;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setTotalSlots(int totalSlots) {
-		this.totalSlots = totalSlots;
-	}
+    public void setId(long id) {
+        this.id = id;
+    }
 
-	public int getAvaialableSlots() {
-		return avaialableSlots;
-	}
+    public String getStationName() {
+        return stationName;
+    }
 
-	public void setAvaialableSlots(int avaialableSlots) {
-		this.avaialableSlots = avaialableSlots;
-	}
-	
-	
-	
-	
-	
+    public void setStationName(String stationName) {
+        this.stationName = stationName;
+    }
 
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public int getTotalSlots() {
+        return totalSlots;
+    }
+
+    public void setTotalSlots(int totalSlots) {
+        this.totalSlots = totalSlots;
+    }
+
+    public int getAvaialableSlots() {
+        return avaialableSlots;
+    }
+
+    public void setAvaialableSlots(int avaialableSlots) {
+        this.avaialableSlots = avaialableSlots;
+    }
 }

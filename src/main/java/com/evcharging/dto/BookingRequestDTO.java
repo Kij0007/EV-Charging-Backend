@@ -1,15 +1,12 @@
 package com.evcharging.dto;
 
-import java.time.LocalDate;
-
-import jakarta.annotation.Nonnull;
-
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
 public class BookingRequestDTO {
 
 	@NotNull
+	@Positive
 	private Long userId;
 	
 	public Long getUserId() {
@@ -40,6 +37,7 @@ public class BookingRequestDTO {
 	}
 
 	@NotNull
+	@Positive
 	private Long stationId;
 	
 	

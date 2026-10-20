@@ -7,6 +7,20 @@ public class BookingResponseDTO
 	private Long stationId;
 	private String bookingStatus;
 	private double amount;
+	private String stationName;
+	private String location;
+	private java.time.Instant createdAt;
+
+    public BookingResponseDTO(Long bookingId, Long userId, Long stationId, String bookingStatus, double amount,
+                              String stationName, String location, java.time.Instant createdAt) {
+        this(bookingId, userId, stationId, bookingStatus, amount);
+        this.stationName = stationName;
+        this.location = location;
+        this.createdAt = createdAt;
+    }
+    public String getStationName() { return stationName; }
+    public String getLocation() { return location; }
+    public java.time.Instant getCreatedAt() { return createdAt; }
 	
 	public BookingResponseDTO() {
 		// TODO Auto-generated constructor stub

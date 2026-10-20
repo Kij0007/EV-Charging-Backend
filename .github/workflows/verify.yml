@@ -1,0 +1,78 @@
+name: Verify backend and website
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: evcharging_test_ci
+          POSTGRES_USER: evcharging_test
+          # Disposable localhost-only CI fixture; never used by a live database.
+          POSTGRES_PASSWORD: ci-only-temporary-password
+        ports:
+          - 127.0.0.1:5432:5432
+        options: >-
+          --health-cmd "pg_isready -U evcharging_test -d evcharging_test_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          package-manager-cache: false
+      - name: Backend tests and package against isolated H2
+        run: bash ./mvnw --batch-mode --no-transfer-progress clean verify
+      - name: Save H2 test reports before the next clean
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: h2-test-reports
+          path: target/surefire-reports
+          if-no-files-found: ignore
+          retention-days: 7
+      - name: Backend tests against disposable PostgreSQL
+        id: postgres_tests
+        env:
+          EV_TEST_POSTGRES_URL: jdbc:postgresql://127.0.0.1:5432/evcharging_test_ci
+          EV_TEST_POSTGRES_USERNAME: evcharging_test
+          EV_TEST_POSTGRES_PASSWORD: ci-only-temporary-password
+        run: bash ./mvnw --batch-mode --no-transfer-progress clean test
+      - name: Website JavaScript syntax
+        run: |
+          node --check src/main/resources/static/assets/api.js
+          node --check src/main/resources/static/assets/app.js
+          node --check src/main/resources/static/assets/content.js
+      - name: Website JavaScript tests
+        run: node --test src/test/frontend/*.test.mjs
+      - name: Save PostgreSQL test reports
+        if: always() && (steps.postgres_tests.outcome == 'success' || steps.postgres_tests.outcome == 'failure')
+        uses: actions/upload-artifact@v7
+        with:
+          name: postgresql-test-reports
+          path: target/surefire-reports
+          if-no-files-found: ignore
+          retention-days: 7

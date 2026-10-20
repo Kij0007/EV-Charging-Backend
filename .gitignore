@@ -39,3 +39,10 @@ build/
 
 # Local database files (if applicable)
 data/
+.local/
+*.pid
+*.dump
+*.backup
+
+# Safe configuration template
+!.env.example
