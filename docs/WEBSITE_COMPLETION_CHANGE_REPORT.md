@@ -1,6 +1,6 @@
 # Voltway: From Backend API to Working EV Charging Website
 
-**Change report and learning guide | 17-18 October 2026**
+**Change report and learning guide | 17-20 October 2026**
 
 Repository: https://github.com/Kij0007/EV-Charging-Backend
 Comparison point: audited backend commit `a6c1923`
@@ -11,7 +11,9 @@ The final implementation commit is recorded in the delivery message after the re
 This report covers the second development phase: the website, real account login, access control, durable notifications, database migrations and operational setup. The earlier `docs/EV_CHARGING_BACKEND_CHANGE_REPORT.md` explains the first backend audit and remains part of the repository. File paths below are relative to the repository root. Code shown as "before" comes from the actual `a6c1923` Git version; new files are explicitly identified as new.
 
 
-**Public-demo follow-up, 18 October:** The user subsequently approved a free public demo, a separate fresh database and no online charges. Sections 15-17 explain the additional security, visitor information and hosting changes. The original local-release results below remain historical; Section 18 records the later executed checks and actual publishing/deployment status. The existing local `EVCHARGING` database has not been migrated or copied.
+**Current status, 20 October:** The selected setup runs the website and PostgreSQL on the owner's Windows PC, reached through the account-assigned Free ngrok domain. The complete local application/health/Secure-cookie preflight passed at 10:57:33 IST, then the verification process was stopped. A later read-only public probe returned HTTP 404 with provider error `ERR_NGROK_3200`: the assigned public endpoint was offline at that check. The owner must run the full launcher and complete its hidden private token step before public connectivity can be checked again. The Render web service remains suspended and its separate Free database was retained, not deleted. WEB-015 in Section 20 explains the current evidence. Existing local `EVCHARGING` data has not been migrated or copied.
+
+**How to read the earlier results:** Sections 1-14 describe the original local release; Sections 15-19 record the subsequently approved cloud-demo preparation and historical Render rollout. Those results remain actual evidence from their checkpoints, but the old Render URL is not the current link to share. The current PC-tunnel source passed 148 Java tests and packaged successfully; the final public ngrok startup and user journey still need their own observed results.
 
 ## 1. What was delivered, and what the application does
 
@@ -21,7 +23,7 @@ The updated application serves a complete browser website and its JSON API from 
 
 Two product decisions were explicitly approved: **reserve available capacity now** and **run locally without online charges**. A reservation consumes one unit immediately and holds it until cancellation or administrator completion. There is no future start/end time, automatic expiry, named connector, online checkout or physical charger activation. These limits are stated in the interface and its help content.
 
-"Production-oriented" here describes implemented engineering controls: password hashing, sessions, role and ownership checks, CSRF, migrations, database constraints, safe errors and concurrency protection. Public hosting, a domain, TLS termination, operational monitoring, real station equipment and payment-provider accounts were not supplied or deployed. A commercial public service still requires the operational and product work in Section 12.
+"Production-oriented" here describes implemented engineering controls: password hashing, sessions, role and ownership checks, CSRF, migrations, database constraints, safe errors and concurrency protection. At the original local-release checkpoint, hosting and TLS had not been deployed. The later Free Render rollout and online checks in Sections 18-19 are historical: that web service is now suspended. The current PC-hosted HTTPS-tunnel approach is explained in Section 20. Operational monitoring, real charging equipment and payment-provider accounts remain outside this application. A commercial public service still requires the operational and product work in Section 12.
 
 | Area | Implemented behavior | Deliberate boundary |
 | --- | --- | --- |
@@ -539,7 +541,7 @@ The earlier committed database credential remains a manual remediation item: rem
 
 | Priority | Remaining work and reason |
 | --- | --- |
-| Required before public operation | Supply host/domain/TLS, protected production secrets, tested backup/restore, monitoring/alerts, operator contact/privacy/retention policy and an administrator recovery procedure. |
+| Required before a lasting customer service | Free-demo hosting/TLS is now deployed; reliable hosting, tested backup/restore, monitoring/alerts, operator contact/privacy/retention policy and an administrator recovery procedure remain required for lasting operation. |
 | Required for historical data | Rehearse backup restoration, compare the actual old schema, normalize the reviewed booking check name and explicitly baseline before V2. Provision legacy accounts through an authorized process. |
 | Required product decision | Define stale-reservation/no-show policy. Approved current-capacity bookings hold inventory until cancellation or administrator completion; no automatic timeout was invented. |
 | Recommended | Add account email verification and a secure password-recovery flow; agree audit logging and data retention before opening customer registration publicly. |
@@ -553,7 +555,7 @@ The application intentionally lacks checkout, forgot-password email, role-manage
 The inventory below is generated from tracked changes relative to `a6c1923` plus new, nonignored files. It covers source, configuration, tests, operational instructions and this report. Generated build output, runtime databases, downloaded toolchains, credentials and verification scratch files are excluded. No intentional source file deletion is part of this phase.
 
 <!-- FILE_INVENTORY_START -->
-**Actual inventory: 89 files; 65 created; 24 modified; 0 deleted.**
+**Actual inventory: 93 files; 69 created; 24 modified; 0 deleted.**
 
 | Exact relative file path | Action | Reason | Change |
 | --- | --- | --- | --- |
@@ -562,12 +564,14 @@ The inventory below is generated from tracked changes relative to `a6c1923` plus
 | `.github/workflows/verify.yml` | Created | Java 17 H2/PostgreSQL verification and Node frontend checks before manual deployment. | WEB-013 |
 | `.gitignore` | Modified | Exclude local data, private runtime files and backups. | WEB-009 |
 | `Dockerfile` | Created | Verified-build non-root Java 17 image with heap headroom for the free demo instance. | WEB-009/013 |
-| `README.md` | Created | Windows first use, tests, operation, public-demo deployment and free-hosting limits. | WEB-009/013 |
+| `README.md` | Created | Windows first use, current PC-hosted Free ngrok setup, historical Render scope and verification limits. | WEB-009/013/015 |
 | `compose.yaml` | Created | Local durable PostgreSQL and application deployment. | WEB-009 |
+| `docs/PC_HOSTED_PUBLIC_LINK_GUIDE.md` | Created | Current PC-hosted Free assigned-domain setup, private account handoff, security, limits and verification. | WEB-015 |
 | `docs/PUBLIC_DEMO_DEPLOYMENT_GUIDE.md` | Created | Free public-demo setup, secrets, verification, database separation and expiry limits. | WEB-013 |
-| `docs/WEBSITE_COMPLETION_CHANGE_REPORT.md` | Created | User-friendly full class/file/content change report. | All |
+| `docs/WEBSITE_COMPLETION_CHANGE_REPORT.md` | Created | Full class/file/content report including historical cloud rollout and current WEB-015 PC-hosted choice. | All |
 | `ops/DATABASE.md` | Created | Operational setup/stop or safe migration instructions; see Section 8. | WEB-009 |
 | `ops/Start-LocalDatabase.ps1` | Created | Operational setup/stop or safe migration instructions; see Section 8. | WEB-009 |
+| `ops/Start-PublicTunnel.ps1` | Created | Validated foreground loopback HTTP tunnel, local health precheck and disabled inspection; no token storage. | WEB-015 |
 | `ops/Start-Website.ps1` | Created | Operational setup/stop or safe migration instructions; see Section 8. | WEB-009 |
 | `ops/Stop-LocalDatabase.ps1` | Created | Operational setup/stop or safe migration instructions; see Section 8. | WEB-009 |
 | `ops/Stop-Website.ps1` | Created | Operational setup/stop or safe migration instructions; see Section 8. | WEB-009 |
@@ -615,6 +619,7 @@ The inventory below is generated from tracked changes relative to `a6c1923` plus
 | `src/main/resources/application-local.properties` | Created | Explicit environment/profile, migration and secure-session settings. | WEB-009 |
 | `src/main/resources/application-prod.properties` | Modified | Validated schema, Secure cookies and bounded graceful shutdown. | WEB-009/013 |
 | `src/main/resources/application-render.properties` | Created | Separate managed JDBC database, trusted proxy boundary and free-instance resource bounds. | WEB-011/013 |
+| `src/main/resources/application-tunnel.properties` | Created | Loopback-only trusted ngrok forwarding with Secure cookies and no datasource/admin/demo override. | WEB-015 |
 | `src/main/resources/application.properties` | Modified | Database/security defaults, ignored direct forwarding headers and host-port fallback. | WEB-009/013 |
 | `src/main/resources/db/migration/V1__audited_backend_baseline.sql` | Created | Versioned audited schema/accounts/inbox SQL; see Section 8. | WEB-008 |
 | `src/main/resources/db/migration/V2__accounts_and_local_reservations.sql` | Created | Versioned audited schema/accounts/inbox SQL; see Section 8. | WEB-008 |
@@ -645,12 +650,13 @@ The inventory below is generated from tracked changes relative to `a6c1923` plus
 | `src/test/java/com/evcharging/security/SessionAdmissionFilterTest.java` | Created | Fresh-session quotas, reuse, expiry, bounded clients and rejected-CSRF allocation coverage. | WEB-011 |
 | `src/test/java/com/evcharging/security/SessionCapacityHttpIntegrationTest.java` | Created | Actual embedded Tomcat safe capacity failure, existing-session reuse and released capacity. | WEB-011 |
 | `src/test/java/com/evcharging/security/SessionCapacityTest.java` | Created | Concurrent creation, expiry and session-ID rotation cap regressions. | WEB-011 |
+| `src/test/java/com/evcharging/security/TunnelProxyBoundaryTest.java` | Created | Eight actual Tomcat/profile regressions for tunnel trust, protocol handling and unchanged database/local settings. | WEB-015 |
 | `src/test/resources/application-test.properties` | Modified | Isolated H2 with real migrations/validation and no admin credentials. | WEB-008/009 |
 <!-- FILE_INVENTORY_END -->
 
 ## 14. Completion checklist
 
-This checklist records the original local release. Sections 15-18 document the subsequently authorized public-demo work and current verification.
+This checklist records the original local release. Sections 15-19 document the later cloud-demo work; Section 20 records the current PC-hosted choice and verification boundary.
 
 | Deliverable | State |
 | --- | --- |
@@ -661,7 +667,7 @@ This checklist records the original local release. Sections 15-18 document the s
 | PostgreSQL migrations and local/deployment instructions | Implemented; no automatic migration of existing user data. |
 | Final test/browser/PostgreSQL results | PostgreSQL and H2: 126 tests passed in each configuration; 11 frontend tests passed; actual browser and packaged-jar restart persistence checks recorded. |
 | Readable class/file/content change documentation | This report; a PDF is generated only after final evidence is inserted and layout is checked. |
-| Public hosting, online charges, physical charger control | Outside the agreed local/no-charge scope; prerequisites/roadmap recorded. |
+| Public hosting, online charges, physical charger control | This checklist predates the historical Render rollout. Current public access is the PC-hosted ngrok approach in Section 20, pending actual tunnel verification. Online charges and physical charger control remain outside scope. |
 
 The next useful milestone is to rehearse production deployment with your real station records, TLS, backup/restore and recovery procedures, then choose the next explicit product capability. Scheduled charging and online payments should follow those decisions rather than be implied by a button or a mock provider class.
 
@@ -1155,8 +1161,363 @@ The browser showed the persistent demo notice, the notice before the signup form
 
 The verifier used `-XX:MaxRAM=512m -XX:MaxRAMPercentage=50.0`, plus the intended smaller pool/thread/session settings. This proves a functional local startup with that heap sizing; **it is not an enforced 512 MB operating-system limit, a traffic/load test, or a measured Render memory guarantee**.
 
-At this checkpoint Render account sign-in and repository/branch selection succeeded, but resources have not been created and no public website URL has been verified. The actual Free-plan preview rejected a setting accepted by the general schema; that setting was removed before creation. The pending cloud checks are kept explicit below.
+The owner subsequently created the Free resources. Render deployed commit `25e0629dfe78bd0d48e849853c3cbb29e08aa887`, and the public HTTPS website and customer authentication were directly verified. Section 19 preserves those historical results and the checks left incomplete when the user cancelled Render. The web service is now suspended; Section 20 is the current PC-hosted approach. The actual Free-plan preview rejected a setting accepted by the general schema; that setting was removed before creation.
 
-Docker was not found on this machine; no local Docker-image build is claimed. The Docker builder retains `clean verify`, and actual Render build/runtime results must be inspected. Native proxy-boundary tests prove the configured valve behavior; the real Render peer chain, Secure-cookie login, independent-client throttling and hosted database persistence still need a live check.
+Docker was not found on this machine; no local Docker-image build is claimed. Render subsequently built and ran the Docker image successfully; Section 19 records the deployed revision and startup evidence. The Docker builder retains `clean verify`. Native proxy-boundary tests prove the configured valve behavior; the real Render peer chain, Secure-cookie login, independent-client throttling and hosted database persistence still need a live check.
 
 The mandatory preservation of existing local data remains a separate pending task. A new demo database does not migrate old accounts or grant access to their booking history.
+
+## 19. WEB-014 — Historical Render rollout, subsequently suspended
+
+This section records the earlier operational rollout on **18 October 2026**. WEB-013 describes the source/configuration changes that made deployment possible. WEB-014 explains what was actually provisioned and observed after the owner approved the Free resources and clicked **Deploy Blueprint**. The user later cancelled this hosting choice; **Suspend Web Service** was performed and the interface showed **Suspended**. The separate cloud database was retained. Section 20 supersedes the hosting recommendation below. No additional Java class, controller, entity or DTO was introduced by WEB-014.
+
+### What was deployed at the historical cloud checkpoint
+
+The historical public address assigned to that now-suspended service was:
+
+**[https://voltway-public-demo.onrender.com/](https://voltway-public-demo.onrender.com/)**
+
+This is not the current address to share. Render reported a successful deployment of these resources at that earlier checkpoint:
+
+| Item | Verified deployment information |
+|---|---|
+| Web service | `voltway-public-demo`, Free plan |
+| Database service | `voltway-public-demo-db`, Free plan; new database for this demo |
+| Source commit | `25e0629dfe78bd0d48e849853c3cbb29e08aa887` |
+| Render deployment | `dep-dba66h3ncjis73fu6c3g` |
+| Provider deployment result | Succeeded; total deployment duration **4 minutes 43 seconds** |
+| First successful startup | **18 October 2026, 11:47:03 IST** |
+| Runtime seen in logs | Java **17.0.20.1**, Spring Boot **4.1.1**, active profiles **prod** and **render** |
+| Database seen by the app | PostgreSQL **17.11** |
+| Schema initialization | Flyway applied **V1 and V2** to the fresh database; Hibernate initialized successfully |
+| HTTP listening port | Render's dynamic internal **10000** port |
+| Initial application startup duration | **150.208 seconds** reported by the application |
+| Administrator bootstrap | Logs confirmed that the initial administrator was provisioned; no password or provider secret was read or recorded |
+
+The provider's successful deploy is evidence that it built and started the application and accepted its deployment checks. It is not a substitute for independently testing account login, permissions and booking behavior through the public website. Those checks are kept separate below.
+
+### Before and after: where the program runs
+
+Previously, `http://127.0.0.1:18082/` or another selected local port reached Java running on the developer's computer. That address was useful for local testing; it did not give other people a public website.
+
+At that cloud checkpoint, Java ran on Render's infrastructure and PostgreSQL ran as a separate managed resource. Visitors used the assigned HTTPS address rather than the developer's loopback address. That setup was independent of the developer's PC, subject to Free sleep/usage/database-expiry limits. This paragraph describes the earlier architecture only: the Render web service is now suspended, and the selected PC-hosted approach requires the PC, app, database and tunnel to stay available.
+
+```text
+Visitor's browser
+    -> HTTPS public address, normally port443
+    -> Render's managed TLS/HTTP edge
+    -> Java application on internal PORT10000
+    -> private connection to the separate managed PostgreSQL database
+    -> response returns through the same web service
+```
+
+Port443 and port10000 have different jobs. Port443 is the visitor-facing HTTPS connection. Port10000 is where this Java process listens inside the hosting environment. Visitors do not need to add `:10000` to the public URL. The provider forwards traffic between them.
+
+### Why the same UI can use the cloud backend
+
+The JAR contains both the website assets and the Spring MVC API. The browser loads `/` and `/assets/...` from the deployed service, then calls relative paths such as `/api/stations` and `/api/bookings` on that same origin. There is no hardcoded local API host to replace for this deployment.
+
+For example, `/api/stations` resolves under the public hostname when the page is opened publicly, and under `127.0.0.1` when it is opened locally. This keeps the UI/API connection understandable and avoids introducing a separate frontend deployment, CORS allowance or cross-site authentication design.
+
+The existing request flow still applies:
+
+```text
+HTTP request -> Spring Security -> Controller -> Service
+             -> Repository -> PostgreSQL -> Response DTO -> UI
+```
+
+Hosting changes the process location and configuration, not the responsibility of `AuthController`, `WebsiteApiController`, `BookingServiceImpl`, the repositories or their DTOs. Their behavior is documented in the earlier class-by-class sections. A public URL does not automatically establish that each step of that flow has been manually verified online.
+
+### Keep cloud credentials and local data separate
+
+The owner entered the initial administrator values in Render's setup controls. The Blueprint obtains the database connection components from the new managed database through provider references. Credentials are runtime settings, not source code, Docker image contents or values to print in this report.
+
+The application activated `prod,render`. These profiles select the cloud JDBC connection and Secure session cookie settings; they do not automatically copy data from a developer's computer. Fresh Flyway migrations created the cloud schema deliberately.
+
+**The existing local database named `EVCHARGING` was not connected, uploaded, baselined, overwritten or migrated during this cloud rollout.** Its old users and booking history do not appear in the new demo. The separate preservation/migration task still requires a private backup, actual schema audit and rehearsal against a restored clone before changes are planned for it.
+
+No original local database password, local administrator-access file or data dump was uploaded as part of this deployment. The fact that the new cloud schema initialized successfully says nothing about compatibility with the older local schema.
+
+### What the public demonstration promises
+
+The software implements customer/admin accounts, authorization, station records, immediate reservations, cancellation/completion and in-app notifications. New reservations collect no money. It has no payment charge, named physical connector, charger-control protocol or future appointment calendar.
+
+The public demo notice asks people to use test details. A station created for a demonstration must be labeled as a test station; it is not evidence that a real roadside charger exists or can be activated. This distinction remained necessary even while the application ran on the earlier public cloud service.
+
+### What happened when the Free service slept
+
+After the first successful startup, logs recorded graceful shutdown at **12:02:03 IST**. The first visitor arrived around **12:17 IST**, which woke the Free web instance. The observed shutdown followed the initial startup by 15 minutes, consistent with the idle-sleep limit documented by the provider.
+
+The restarted process later completed startup in **159.603 seconds**, listening on internal port10000 at **12:20:13 IST**. It retained schema version2 and skipped administrator bootstrap because that account already existed. Two early HTTP probes timed out during wake-up; a later probe at about **12:22 IST** returned HTTP200 and health UP. The timeouts remain failed early attempts, not successful tests.
+
+The first measured Java startup took about two and a half minutes. A short request can therefore time out while a sleeping instance is still waking. This is an observed Free-demo limitation, not a reason to disable security/migrations or silently switch to paid hosting. Later HTTP observations should be recorded with their actual results before declaring the public user journey verified.
+
+Sessions and admission/attempt counters are in the Java process. A stop/restart can require the visitor to log in again. Database records are in the separate managed PostgreSQL service, so a web-process restart is different from deleting its database. Database expiry, however, is a separate Free-plan limit: the database becomes unavailable after its configured free lifetime. There is no permanent-retention or continuous-availability promise.
+
+### Historical cloud verification record at that checkpoint
+
+| Area | Actual evidence / current boundary |
+|---|---|
+| Owner authorization and resource creation | Owner approved the Free-resource preview and clicked Deploy Blueprint. |
+| Source/configuration | The deployed commit is identified above; WEB-013 records its files and the removed unsupported shutdown override. |
+| Provider build/startup | Deployment succeeded; actual Java/Boot/profile/database/migration/port details were observed in logs. |
+| GitHub Actions | Runs `39102842952` and `39102840437` reported success. Detailed test counts should be taken from their execution logs, not inferred from a green badge. |
+| Public HTTPS GET after wake | Verified HTTP200 for the website, JavaScript, directory, health and demo-mode information. HTTP redirects301 to the expected HTTPS origin; normal certificate and hostname validation remained enabled. |
+| Cloud login / cookie / permissions | Disposable-account HTTP verification passed registration, incorrect-password401, correct login, session/CSRF rotation, profile/inbox access, USER denial on admin APIs, CSRF protection and logout. Cookie flags Secure/HttpOnly/SameSite=Lax/host-only/path-root passed. Administrator browser access is being resolved separately. |
+| Cloud booking/cancel/complete/inbox/profile flow | **Pending direct verification using clearly labeled test data.** |
+| Actual Render forwarded client-IP behavior | **Pending live verification.** Synthetic Tomcat tests establish configuration behavior only. |
+| Record persistence after a controlled cloud restart | **Pending an explicit before/after check.** Separate managed storage is the architecture, not proof of that test. |
+| Existing local data migration | **Still pending and separate.** No original data was altered by the fresh-cloud rollout. |
+
+No additional Java class/file was created for WEB-014. Its meaningful changes are operational: an approved source revision was built and run by the provider, a new database was initialized, and a public route was assigned. The final report/PDF and access instructions should be updated with the direct HTTP/browser results once observed, without changing this checkpoint's failed/pending checks into fabricated successes.
+
+### Historical cloud next steps, superseded by cancellation
+
+These were the proposed next checks before cancellation. They are preserved as historical scope; do not resume Render on their authority. Current work follows Section 20.
+
+1. Wait for the waking instance to finish startup, then directly check HTTPS `/`, required assets, `/actuator/health` and `/api/site-info`. The public endpoints must not create a session merely by being viewed; the site-info response must say demo mode is enabled.
+2. Verify a test customer's registration/login/refresh and ordinary/admin permission boundaries. Check Secure/HttpOnly/SameSite cookie attributes without printing token/cookie values.
+3. Use a clearly labeled test station to verify reserve/cancel and administrator completion, including capacity returning only once, the customer's own booking list, notifications and account controls.
+4. If a controlled restart is performed, compare saved record details before/after and expect to log in again. Do not delete the database, switch to a stale local database or treat sleep as a data-reset command.
+5. Record the actual database expiry date from the provider and plan any needed private export before then. No paid upgrade, backup subscription, online charge or recurring automation is authorized merely by publishing this demo.
+
+
+### Direct online verification: actual commands and results
+
+```powershell
+& 'C:/Users/kshit/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe' work/verify_public_site.py
+& 'C:/Users/kshit/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe' work/public_transport_check.py
+```
+
+The successful authentication run completed at **12:26:22 IST**, with **33 HTTP/security assertions passed**, using an invented test account stored only in a private scratch credential file. It took16.704 seconds. The sanitized results are `work/public-qa-second-run.log` and `work/public-qa-results.json`. These assertions are separate from the140-case Java suite; they are not33 new JUnit tests. The transport check returned HTTP301 to the expected HTTPS address and HTTP200/demo:true over a normally verified TLS connection.
+
+An earlier verifier run requested HTML while advertising only `Accept: application/json`; Spring correctly returned406. The verifier's static-resource Accept headers were corrected, then the full run passed. This was a test-tool error and required no application change. An earlier inline transport probe also had a local quoting syntax error; the saved script replaced that command and executed successfully. No failed probe is counted as a passed application test.
+
+The real browser opened the cloud website and sign-in form with its demo notice. The owner reported incorrect administrator credentials; the independent customer test established cloud customer authentication, not that the administrator password was known or that administrator booking operations were completed. Administrator access and cloud booking/cancellation/completion were left unverified when the user cancelled Render. They are historical limits of that rollout, not instructions to resume the suspended service. No password was requested in chat or read from Render secrets, and bootstrap does not overwrite an existing account's password on restart.
+
+<!-- GLOBAL_FINAL_FUNCTIONAL_RESULTS -->
+
+## 20. WEB-015 — Current choice: run the website on the PC with a fixed Free ngrok link
+
+### The current decision and the earlier Render work
+
+The user changed the hosting decision: **Spring Boot and PostgreSQL should run on the owner's Windows PC, reached through an account-assigned Free ngrok HTTPS address.** This is now the selected public-access architecture. The PC, internet connection, PostgreSQL, Java application and ngrok agent must remain running. A fixed hostname can be reused; it does not keep a switched-off computer online.
+
+The earlier Render rollout in Section 19 is **historical**. It records a real cloud build, separate cloud database and observed cloud behavior at that earlier checkpoint. It is not the current hosting recommendation or the current address to share. Its independence from the owner's PC was a property of that previous setup, not of the new PC-hosted choice.
+
+After cancellation, the actual Render operation was **Suspend Web Service**. The Render interface showed the web service as **Suspended**. Suspension is different from deletion: the cloud Free PostgreSQL database was retained, because irreversible database deletion was not authorized. No claim is made that cloud data, the service definition or all cloud resources were permanently removed. The retained Free database remains subject to its provider's rules; those cloud-expiry rules do not describe the PC's PostgreSQL database.
+
+The account-assigned hostname `unbaked-skyrocket-abide.ngrok-free.dev` was observed through a read-only account domain listing. That is not a verified running endpoint. No token was configured and no public ngrok user journey was completed at this checkpoint. The usable HTTPS forwarding address still needs an authenticated agent startup and direct verification. Account setup, an assigned hostname, source preparation and successful public login are separate checkpoints.
+
+### What changed, and what remains the same
+
+There are four new repository files for WEB-015, plus a README update and a separate workspace-specific owner launcher at `outputs/Start-PC-Public-Website.ps1`. **No production Java class, controller, DTO, entity, repository or business service was changed for this hosting choice.** The existing login, ownership checks, CSRF protection, credential-version revocation, bounded sessions, reservation locking, idempotency and inbox remain the same implementation.
+
+The website and its APIs still share one Spring Boot origin. Relative calls such as `/api/bookings` automatically use the public ngrok hostname. There is no separate frontend deployment and no permissive CORS rule to add. Reservations still hold current capacity; there is no online charge, physical charger activation, future appointment or charging telemetry integration.
+
+```text
+Visitor's browser
+  -> account-assigned ngrok HTTPS address
+  -> ngrok edge and secured tunnel
+  -> ngrok agent on the owner's PC
+  -> Spring Boot at http://127.0.0.1:18082
+  -> the explicitly selected, reviewed local PostgreSQL database
+```
+
+Only the HTTP application is shared. PostgreSQL is not exposed through a public database/TCP tunnel. Router port forwarding, a Windows service and a LAN-wide application bind are not needed by this design.
+
+### WEB-015A — A dedicated Spring profile for the local tunnel
+
+**New file:** `src/main/resources/application-tunnel.properties`.
+
+**Class/method:** None; this is a Spring Boot configuration profile. Activating `local,tunnel` loads the ordinary local configuration and then the later tunnel profile's explicit overrides.
+
+**Before:** The normal application deliberately ignored forwarded headers. Local HTTP development allowed a non-Secure session cookie. These focused snippets come from the actual retained files:
+
+```properties
+# application.properties
+server.address=${SERVER_ADDRESS:127.0.0.1}
+server.forward-headers-strategy=none
+server.servlet.session.cookie.secure=false
+
+# application-local.properties
+server.address=${SERVER_ADDRESS:127.0.0.1}
+server.servlet.session.cookie.secure=false
+```
+
+Those defaults are appropriate for ordinary local-only HTTP development. By themselves they do not define a public HTTPS proxy boundary.
+
+**After:** The new tunnel profile contains:
+
+```properties
+server.address=127.0.0.1
+server.servlet.session.cookie.secure=true
+server.forward-headers-strategy=native
+server.tomcat.remoteip.internal-proxies=127.0.0.1/32,::1/128
+server.tomcat.remoteip.trusted-proxies=
+server.tomcat.remoteip.remote-ip-header=X-Forwarded-For
+server.tomcat.remoteip.protocol-header=X-Forwarded-Proto
+server.tomcat.remoteip.host-header=
+server.tomcat.remoteip.port-header=
+app.security.max-active-sessions=512
+```
+
+**Why:** A browser visits ngrok over HTTPS, while the agent reaches Spring over local loopback HTTP. The application needs to recognize the trusted forwarded visitor address/protocol and retain Secure authentication cookies. The forwarding sender must be narrowly defined so an arbitrary public or LAN caller cannot choose an identity by supplying `X-Forwarded-For`.
+
+**How it works:** Spring Boot configures the existing Tomcat `RemoteIpValve` through the native forwarding properties. Only the local agent at IPv4/IPv6 loopback is an internal proxy. LAN/private ranges and other public peers are not trusted by this profile. Tomcat examines the forwarded address chain from the right and stops at the first untrusted address. Given a forged prefix followed by the actual visitor appended by ngrok, the appended visitor controls the observed address rather than the attacker's leftmost text. Forwarded host/port overrides remain disabled.
+
+Protocol-chain handling is conservative: mixed `http` and `https` values do not make an insecure request secure. A Secure cookie tells the browser to send the session cookie over HTTPS only. **That flag is not itself an HTTP-to-HTTPS redirect.** The real public endpoint must redirect/reject HTTP before anyone enters credentials. The actual agent/edge chain and browser cookie behavior require live verification; a synthetic valve test does not establish them.
+
+**Trade-offs and boundary:** All trusted forwarding ends at the owner's loopback interface. Processes already running on that PC are inside this trust boundary; this does not protect the owner from an untrusted local process. Keep the application off the LAN and do not widen trusted proxies to work around login issues. Ordinary HTTP localhost login remains available through the separate normal `local` startup mode. When `tunnel` is active, use the public HTTPS address for authenticated operation, including from the host PC. Local HTTP health checks can still work.
+
+**Data compatibility:** The profile contains no datasource, Flyway, administrator or demo-mode override. It does not select, copy, migrate, baseline, reset or delete a database. Existing `EVCHARGING` data still requires the earlier backup/schema-audit/restored-clone process before adopting that database. The PC must use an explicitly selected reviewed database with compatible migrations. `APP_DEMO_MODE=false` is appropriate for ordinary PC operation, because the former cloud demo's Free-database-expiry notice does not describe local storage. Existing production/Render profiles are preserved for their own contexts.
+
+### WEB-015B — Start only the reviewed HTTP tunnel
+
+**New file:** `ops/Start-PublicTunnel.ps1`.
+
+**Class/method:** This is a PowerShell script, not a Java class. Its public parameters are `NgrokPath`, `Port`, `PublicDomain` and `PreflightOnly`. `Test-SecureSessionCookie` validates response-cookie attributes before a public tunnel can start; `ConvertTo-HealthJsonText` normalizes the health response representation before JSON parsing.
+
+**Before:** There was no repository helper for this PC-hosted public-link workflow. An improvised tunnel command could target the wrong port, retain login traffic in the default inspector or make the operator think that an unhealthy application was ready.
+
+**After:** The script performs these specific operations:
+
+| Operation in the actual script | Result and reason |
+| --- | --- |
+| Parameter validation | `Port` accepts 1024–65535 and explicitly rejects the known PostgreSQL ports 5432, 55432 and 55433. Optional `PublicDomain` accepts only a hostname matching the assigned Free `ngrok-free.app`/`.dev` pattern, without a scheme, path or port. |
+| Executable resolution | Resolves an explicit path, then `ngrok.exe` on PATH, then the ignored `.local/tools/ngrok.exe` fallback. It requires an existing `.exe`; it does not download a binary or install a service. |
+| Loopback origin | Builds `http://127.0.0.1:<Port>` itself. It does not accept an arbitrary upstream URL or expose PostgreSQL. |
+| Health precheck | Uses `Invoke-WebRequest` with a five-second timeout and no redirect following. It requires HTTP 200 and JSON `status` exactly `UP` from `/actuator/health` before starting ngrok. |
+| `ConvertTo-HealthJsonText` | Accepts either a string or a UTF-8 byte array from PowerShell's web-response Content, rejects unsupported types/invalid UTF-8, and removes a leading byte-order mark before JSON parsing. This supports the Actuator vendor JSON media type without treating individual bytes as JSON text. |
+| Cookie security preflight | Makes an anonymous `/api/auth/csrf` request, without supplying an account/password. `Test-SecureSessionCookie` requires a valid JSESSIONID cookie with Secure, HttpOnly and exactly one SameSite=Lax attribute. It handles coalesced Windows headers without splitting an Expires-date comma and rejects insecure duplicates, empty values, ambiguity and newline injection. Cookie/token values are not printed. |
+| Preflight-only mode | `-PreflightOnly` performs local health/cookie checks and returns before running ngrok or asking for credentials. |
+| Agent arguments | Builds `@('http', $origin, '--inspect=false')`; an explicitly supplied assigned domain adds `--url https://<domain>`. The default lets the agent use the account's assigned development domain. |
+| Foreground launch | Runs `& $NgrokPath @ngrokArguments`. The terminal stays attached; Ctrl+C stops sharing. A nonzero `$LASTEXITCODE` becomes an actionable script error. |
+| Credential handling | Does not accept, open, print, save or place an authtoken on the command line. The owner configures the account privately. No captured HTTP request is replayed. |
+
+The health check and cookie preflight establish that the selected local HTTP application is up and issues the required cookie flags. They do not prove public TLS, the real forwarded chain, browser session behavior or remote login. Those checks remain part of actual public startup verification. The preflight creates one anonymous CSRF session but does not create or authenticate a user.
+
+**Why the health decoder was added:** A valid JSON response does not guarantee that a PowerShell web-response object exposes Content as a string. Independent inspection of PowerShell 7.6.5's actual response-content helper confirmed that Actuator's `application/vnd.spring-boot.actuator.v3+json` can be classified as non-text/non-ordinary-JSON and exposed as `System.Byte[]`. The decoder converts that representation once using strict UTF-8, then parses the complete JSON text. The compatibility check against that response-content helper parsed UP without making an HTTP request. The later real preflight pass is separate runtime evidence. Health failures now identify only the request/decode/parse/status stage, exception type and numeric HTTP code; they do not print response bodies, headers, tokens or exception messages. This correction is distinct from the separately confirmed native-memory startup failure described below.
+
+**Why inspection is disabled:** ngrok's normal HTTP inspector can display request headers, bodies and responses, including login traffic. This helper always supplies `--inspect=false` to avoid retaining that local inspection view. ngrok remains a provider in the request path and terminates public HTTPS at its edge; disabling inspection does not remove that trust relationship. [Official CLI flags](https://ngrok.com/docs/gateway/agent/cli), [HTTP inspection behavior](https://ngrok.com/docs/gateway/agent/web-inspection-interface)
+
+The script makes no firewall/router change, requests no administrator elevation, starts no background service and deletes no data. Stopping the tunnel ends public access without deleting accounts or reservations in the selected local database.
+
+### WEB-015C — Test the actual Tomcat forwarding boundary
+
+**New file/class:** `src/test/java/com/evcharging/security/TunnelProxyBoundaryTest.java` / `TunnelProxyBoundaryTest`.
+
+The test class loads the checked-in tunnel profile, creates the actual Tomcat `RemoteIpValve` and observes its output. It does not substitute a custom forwarded-header parser. Its eight test methods cover:
+
+| Actual test method | Behavior checked |
+| --- | --- |
+| `loopbackAgentSuppliesSeparateClientAddressesAndHttps` | Distinct internet visitors remain distinct when the loopback agent forwards them; HTTPS is recognized. |
+| `ipv6LoopbackAgentCanSupplyAnIpv6Visitor` | IPv6 loopback and an IPv6 visitor work. |
+| `lanAndPublicPeersCannotForgeClientIdentityOrHttps` | Direct LAN/private/public peers cannot use forwarding headers as trusted identity/protocol. |
+| `appendedActualVisitorWinsOverForgedLeftmostPrefix` | The appended real visitor is chosen instead of a forged earlier address. |
+| `privateForwardedAddressStopsTraversalInsteadOfTrustingTheLan` | A private forwarded address is not silently treated as an additional trusted proxy. |
+| `forwardedHttpCannotBeUpgradedByAnEarlierHttpsToken` | HTTP or `https, http` cannot claim secure transport. |
+| `mixedProtocolChainIsConservativeAndAllHttpsChainIsSecure` | Mixed chains remain conservative; an all-HTTPS chain is recognized. |
+| `tunnelProfileKeepsSecureCookiesAndDoesNotChangeDatabaseOrNormalLocalMode` | Loopback/Secure settings hold, no database/Flyway/admin/demo override is added, and existing base/local/production settings remain intact. |
+
+The `throughValve` helper constructs the request, applies profile values to the valve and records the resulting address/scheme/security state. The `properties` helper reads the actual classpath configuration and fails if it is missing. Neither helper needs a real account, token or live tunnel.
+
+**Executed Java verification:** The final full `clean verify` completed on 18 October 2026 at **15:33:55 IST** in **3 minutes 22 seconds**: **148 tests executed, 148 passed, zero failures, errors or skips; BUILD SUCCESS**. It packaged the runnable Spring Boot JAR. The log is `work/pc-tunnel-verify-retry.log`. This was the default isolated H2 test configuration, including the actual embedded-Tomcat HTTP test; it is not 148 separate PostgreSQL integration tests or proof of a live tunnel.
+
+The first PC-tunnel run completed at **13:22:54 IST** after 1 minute 31 seconds with **148 executed, zero failures, one error and zero skips; BUILD FAILURE**. `SessionCapacityHttpIntegrationTest` could not connect to its loopback test server: `java.net.SocketException: Permission denied: connect`. That environment/network-permission failure remains recorded in `work/pc-tunnel-verify.log`; it is not counted as a successful run. The completed retry above is the successful evidence, with no test removed or skipped.
+
+### WEB-015D — A prepared-workspace launcher for the owner
+
+**User-facing artifact outside the Git repository:** `outputs/Start-PC-Public-Website.ps1`, relative to the task workspace. This is a newly created owner-run file, not a Java class or generic installer. It is separate from the repository-only Git inventory in Section 13. Its parameters are `Port`, `PublicDomain` and `ApplicationOnly`; PublicDomain defaults to the account's observed assigned hostname, `unbaked-skyrocket-abide.ngrok-free.dev`, and is passed explicitly to the tunnel helper. Pinning this hostname is not proof that an endpoint is running.
+
+The owner launcher connects the already prepared local database, packaged Java application and repository tunnel helper. It does not depend on keeping Codex open, but the prepared workspace/runtime files must remain in place. A source ZIP alone is not the same as this prepared workspace. It downloads no software and creates no database or default administrator.
+
+| Actual function or block | What it does and why |
+| --- | --- |
+| `Test-LoopbackPortAvailable` | Temporarily binds the requested loopback port, then closes that listener. An occupied application port causes refusal; no existing IDE/application process is silently reused or stopped. |
+| `ConvertTo-WindowsArgument` | Applies Win32 quoting rules for spaces, quotes and trailing backslashes. This lets Windows PowerShell 5.1 pass the intended native arguments instead of misreading a path or placeholder. |
+| `Get-NormalizedPath` | Canonicalizes directory/executable paths for identity comparisons rather than relying on a loose text match. |
+| Required-file and PostgreSQL checks | Requires the prepared Java/JAR/ngrok/helper files, PostgreSQL 17.11 binaries, PG_VERSION 17 and matching private workspace metadata. It targets the reviewed workspace cluster on loopback 55433 and database `evcharging`, not the older `EVCHARGING` installation on another server. |
+| Cluster status/start and identity query | Starts the exact prepared directory only when the port is free and `pg_ctl` explicitly reports stopped (code 3). If a listener already exists, the authenticated read-only SQL identity check is mandatory regardless of `pg_ctl`'s status. That query checks database, user, port, version, listen address and real data directory. A mismatched identity fails; no foreign listener is stopped or silently trusted, and no row dump, database creation or reset is performed. |
+| Controlled child configuration | Temporarily clears inherited cloud/IDE/test overrides, pins the reviewed datasource/Flyway identity, uses `local,tunnel`, binds 127.0.0.1, validates migrations/schema and disables automatic baselining. Administrator bootstrap is blank; APP_DEMO_MODE is false. Password values stay in the child environment and are referenced through literal Spring placeholders in arguments. |
+| Owned Java startup and readiness | Starts Java hidden with bounded memory/thread/pool settings, records PID/start time/executable/JAR hash and waits for that process's own Tomcat-started log plus health UP. It then invokes the tunnel helper's Secure-cookie `-PreflightOnly` before requesting an ngrok token. |
+| `ApplicationOnly` branch | Runs the local application/preflight without asking for a token or creating a public endpoint. This supports local runtime verification but does not establish a working public link. |
+| Private owner token prompt | After readiness/preflight, `Read-Host -AsSecureString` receives the token privately. It is supplied to the foreground agent through NGROK_AUTHTOKEN, not source, a saved project token file or command-line text; Java is started before this token is supplied. |
+| `finally` cleanup | Checks the recorded Java PID, start time and executable before stopping only the process it created. PostgreSQL/data are left intact. Controlled process environment values are restored and temporary secret references are cleared. A forced terminal kill or power loss can bypass ordinary cleanup; inspect the recorded local process/log details if needed. |
+
+The owner can run the sidecar after retaining the prepared workspace. No actual authtoken, session cookie, password or CSRF token is reproduced in these instructions. Successful parser/static tests are distinct from a completed application/tunnel launch.
+
+### WEB-015E — Explain the owner's startup, fixed domain and Free limits
+
+**New file:** `docs/PC_HOSTED_PUBLIC_LINK_GUIDE.md`.
+
+The guide contains the architecture, local database/profile prerequisites, official Windows agent installation, private owner account/token handoff, launch/share/stop steps, proxy/cookie explanation, verification checklist and troubleshooting. It does not invent a working hostname or a known administrator password. Its examples keep tokens out of chat, source and command-line arguments, and restore temporary process environment settings after use.
+
+**Modified file:** `README.md`.
+
+The main instructions now identify PC-hosted ngrok as the current choice, link the new guide and retain Render material explicitly as earlier reference. They distinguish public HTTPS tunnel operation from ordinary local-only HTTP and retain the existing-data preservation requirement.
+
+The key launch command, after the owner privately installs/authenticates the agent and starts the reviewed app/database, is:
+
+```powershell
+.\ops\Start-PublicTunnel.ps1 -Port 18082
+```
+
+The guide documents one account-assigned Free development domain, reusable across agent restarts while the account retains it. This is not a newly purchased custom domain and not a promise of permanent availability. The agent must print the actual address; an address being assigned is not evidence of a tested application.
+
+The official Free limits checked for the guide include **20,000 HTTP requests and 1 GB outbound transfer per month**, plus request-rate/endpoint limits. A page visit can fetch multiple assets and API calls, so 20,000 requests does not mean 20,000 independent visitors. The Free HTML interstitial requires the visitor to choose **Visit Site**; its domain cookie then suppresses the warning for seven days. This is the provider's warning page, not an inactive application control. A response header added to Spring cannot remove a warning shown before the application is reached. No paid bypass or subscription is introduced. [Official Free-plan limits](https://ngrok.com/docs/pricing-limits/free-plan-limits), [assigned-domain explanation](https://ngrok.com/blog/free-static-domains-ngrok-users)
+
+### Files created and modified for WEB-015
+
+| File | Action | Reason | Change |
+| --- | --- | --- | --- |
+| `src/main/resources/application-tunnel.properties` | Created | Loopback-only trusted tunnel profile and Secure cookies; no database/business-rule override. | WEB-015 |
+| `src/test/java/com/evcharging/security/TunnelProxyBoundaryTest.java` | Created | Eight regressions against the real Tomcat valve and profile. | WEB-015 |
+| `ops/Start-PublicTunnel.ps1` | Created | Validated foreground HTTP tunnel with health precheck and inspection disabled. | WEB-015 |
+| `docs/PC_HOSTED_PUBLIC_LINK_GUIDE.md` | Created | Clear Windows setup, private handoff, fixed Free link, limits and verification. | WEB-015 |
+| `README.md` | Modified | Current PC-hosted instructions and historical Render distinction. | WEB-009/013/015 |
+| `docs/WEBSITE_COMPLETION_CHANGE_REPORT.md` | Modified | Records the current choice, exact changes, cancellation action and real evidence boundaries. | WEB-015 |
+| `outputs/Start-PC-Public-Website.ps1` (workspace artifact outside repository) | Created | Start only the reviewed workspace database/Java, verify Secure cookie flags and request the owner's token privately before the pinned-domain tunnel. | WEB-015 |
+
+### What was checked, and what remains to be verified
+
+On **20 October**, the current `work/test-pc-launcher-static.ps1` was executed using both Windows PowerShell **5.1.26100.9711** and PowerShell **7.6.5**. Both passed with exit code zero: two script ASTs, 15 synthetic cookie cases, an actual WebHeaderCollection representation, **seven health-content cases**, nine native argument round-trips through Windows CommandLineToArgvW, and **six listener-status decisions**. Health cases cover strings/UTF-8 bytes with or without a leading byte-order mark, and rejection of null, unsupported types and invalid UTF-8. Listener cases combine a free/busy port with status 0/3/4, evaluating actual branch conditions without executing startup bodies. The script extracts only pure functions; it does not dot-source the complete launcher, run Java/ngrok/psql, connect to a database, request credentials or make HTTP calls. The operations agent also recorded zero syntax errors for the five guide PowerShell examples. These results supplement the 18 October static checks and are not a live public tunnel.
+
+```powershell
+& 'C:/WINDOWS/System32/WindowsPowerShell/v1.0/powershell.exe' -NoProfile -ExecutionPolicy Bypass -File 'work/test-pc-launcher-static.ps1'
+& 'C:/Users/kshit/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe' -NoProfile -File 'work/test-pc-launcher-static.ps1'
+```
+
+The completed Maven command below was run from the repository root. The JDK/cache/temp paths select the prepared verification tools; no database password is included:
+
+```powershell
+$env:JAVA_HOME='C:/Users/kshit/Documents/Codex/2026-10-17/codex-master-prompt-ev-charging-spring/work/runtime/jdk17/jdk-17.0.20.1+1'
+$env:MAVEN_USER_HOME='C:/Users/kshit/Documents/Codex/2026-10-17/codex-master-prompt-ev-charging-spring/work/maven'
+$env:TEMP='C:/Users/kshit/Documents/Codex/2026-10-17/codex-master-prompt-ev-charging-spring/work/tmp'
+$env:TMP=$env:TEMP
+$env:MAVEN_OPTS='-Xmx160m -XX:ReservedCodeCacheSize=48m -XX:ActiveProcessorCount=2'
+.\mvnw.cmd --batch-mode --no-transfer-progress "-Dmaven.repo.local=$env:MAVEN_USER_HOME\repository" '-DargLine=-Xmx384m -XX:ReservedCodeCacheSize=64m -XX:ActiveProcessorCount=2' clean verify
+```
+
+The successful 148-case result is recorded above. The earlier 140-case H2/PostgreSQL and 17-case frontend results remain evidence for their earlier revisions; this new Java-only configuration/test change does not fabricate a new 148-case PostgreSQL run or a public-browser success. Two browsers behind the same router do not prove that different public client IPs receive independent limits.
+
+<!-- PC_RUNTIME_EVIDENCE_START -->
+
+| Runtime checkpoint | Actual state at this report update |
+| --- | --- |
+| Assigned account hostname | Read-only account listing showed `unbaked-skyrocket-abide.ngrok-free.dev`; no active endpoint was inferred from that listing. |
+| First owner-launcher native attempt | Incomplete: `pg_ctl` process-visibility handling blocked the launch although the prepared PostgreSQL server was ready (PID 22036). It was not counted as a successful application-only/public run. |
+| Earlier incomplete native attempt | The authenticated PostgreSQL identity check passed. Owned Java PID 26464 loaded `local,tunnel`, reached loopback 18082 with PostgreSQL 17.11/schema version 2 and started in about 31.8 seconds. The helper then failed its health preflight; cleanup stopped its own Java process. That incomplete attempt was not counted as a successful owner/public workflow. |
+| Separate 18 October startup failure | The attempt recorded under `work/pc-public-runtime/20261018-154113-31196` failed during early JVM startup with a confirmed native-memory allocation failure for Java PID 30896. It is distinct from the PowerShell health-content compatibility issue and from the earlier JUnit loopback-permission error. It was not a successful runtime test. |
+| Successful owner-launcher application/preflight, 20 October | `outputs/Start-PC-Public-Website.ps1 -ApplicationOnly` completed local readiness/preflight at **10:57:33 IST**. The authenticated PostgreSQL 17.11 identity check passed; owned Java PID 24288 used `local,tunnel`, 127.0.0.1:18082 and the reviewed 127.0.0.1:55433/evcharging database. Boot startup took **31.825 seconds**. Flyway V1/V2 were already current at schema version 2; no migration was needed. Actual helper health and Secure/HttpOnly/SameSite=Lax cookie checks passed. No token was requested and no tunnel was started. Logs are under `work/pc-public-runtime/20261020-105647-24332`. |
+| Current mode and controlled stop | A separate read-only `/api/site-info` check returned `demo:false` and an empty notice. Ctrl+C ended the application-only verification session; application port 18082 was then confirmed free. The prepared database/data were retained. This test process is not being described as a continuously running public service. |
+| Account token and public endpoint | Not configured/verified at this checkpoint. Owner must complete private token entry; no token is requested in this report or chat. |
+| Actual public probe, 20 October | A read-only HTTPS GET of the assigned domain's `/actuator/health`, with the automation warning-page request header, returned HTTP **404** and provider code **ERR_NGROK_3200**; it did not reach an application health UP response. The public endpoint was offline at this check. No credentials or application mutations were sent. This provider result is not relabeled as an application health pass or proof that the locally verified backend is unhealthy. |
+| Public HTTPS/HTTP and forwarded clients | Pending live checks of certificate, HTTP redirect/unavailability and actual trusted agent/header behavior. |
+| Public user journey | Pending ngrok registration/login/refresh, booking/cancel, administrator completion, returned capacity, profile, inbox and permission checks. Historical local/Render results are not relabeled as ngrok results. |
+
+<!-- PC_RUNTIME_EVIDENCE_END -->
+
+The local owner-launcher and security preflight are verified. **The latest public probe confirmed the ngrok endpoint offline; public connectivity and the public user journey remain incomplete.** Local success and an assigned hostname do not establish an active public site. The owner must run the full launcher, enter the account token privately in its hidden local prompt and retain the running window/PC/database/Java/agent/internet, then verify the HTTPS forwarding address. The token must not be sent in chat. Existing local `EVCHARGING` preservation/migration remains pending; neither suspension of Render nor starting a tunnel completes it. Online payments, physical charger control, scheduled appointments, account recovery and external messages remain the previously documented separate product work.
+
+The next usable public address is the owner's **verified ngrok HTTPS forwarding address**. The earlier Render URL is historical and its web service is suspended. Public availability now follows the PC/app/database/tunnel lifecycle and the provider's Free limits.

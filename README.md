@@ -57,15 +57,23 @@ docker compose stop
 
 The build runs `mvn clean verify`. The app runs as a non-root user; PostgreSQL uses a persistent volume and is not published to the host network. The app is published only on `127.0.0.1:8081`. Docker execution is an optional deployment path and is verified only if explicitly recorded in the report.
 
-## Deployment and remaining product scope
+## Public access from your PC — current hosting choice
 
-The repository now includes a **prepared free Render demo**: [render.yaml](render.yaml) creates one Docker web service and one separate PostgreSQL database, both explicitly on the Free plan. Follow [the public demo deployment guide](docs/PUBLIC_DEMO_DEPLOYMENT_GUIDE.md). It explains account setup, secret entry, manual deployment, verification and free-plan limits. A committed Blueprint is not evidence that the service has been deployed or verified online.
+The current setup keeps **Spring Boot and PostgreSQL on your Windows PC**, with one account-assigned **Free ngrok HTTPS link** forwarded to the application. Follow [the PC-hosted public-link guide](docs/PC_HOSTED_PUBLIC_LINK_GUIDE.md). Start the reviewed application with profiles `local,tunnel`, keep the database running, then use:
 
-The public demo uses a **fresh cloud database**. It does not connect to, overwrite, baseline or migrate the existing local `EVCHARGING` database. Preserving and migrating that database remains a separate task requiring its backup, schema audit and restored-clone rehearsal. No local accounts, station records or bookings automatically appear in the cloud demo.
+```powershell
+.\ops\Start-PublicTunnel.ps1 -Port 18082
+```
 
-Render Free web services sleep after inactivity, and Free PostgreSQL expires after 30 days. Use test data only and read the guide before creating resources. Do not choose paid resources or add billing to complete this demo. This is a public demonstration, with no availability or data-retention promise.
+The owner installs/authenticates the official ngrok agent privately first. The helper checks local health and requires a Secure, HttpOnly, SameSite=Lax session cookie, targets only 127.0.0.1 and disables request inspection; it never reads or saves an authtoken. The deliverables also include a PC-specific `outputs/Start-PC-Public-Website.ps1` launcher for the already prepared workspace; its prerequisites and hidden owner-token prompt are explained in the guide. Your account's assigned domain can be reused, but the website is available only while the PC is awake and its internet/database/Java/tunnel are running. Free request/bandwidth limits and the first-visit browser warning apply. No paid plan or purchased domain is required for the assigned link. Actual tunnel verification is recorded separately from local/source checks.
 
-The code includes production-oriented access control, DTO validation, database constraints, migrations and transactional booking locking. A lasting production service still requires appropriate hosting, reliable backups, monitoring, account recovery and an operational review. Use `SPRING_PROFILES_ACTIVE=prod` behind HTTPS; that profile forces Secure session cookies. Do not switch it on for plain HTTP and expect browser login to work. The Render Blueprint activates `prod,render`, which adds the provider port, private database and bounded proxy configuration. Direct local runs ignore forwarded headers.
+The existing local `EVCHARGING` database is not automatically migrated by this setup. Preserve it through the backup, schema audit and restored-clone process in [ops/DATABASE.md](ops/DATABASE.md) before adopting older data. Never expose PostgreSQL directly or enable automatic baselining to clear an error.
+
+Render was the earlier cloud-demo approach and is no longer the selected hosting target. Its [Blueprint](render.yaml) and [historical deployment guide](docs/PUBLIC_DEMO_DEPLOYMENT_GUIDE.md) remain for reference; this README does not claim its resources have been deleted. The PC-hosted mode uses your selected local database, not that separate cloud database.
+
+## Verification and remaining product scope
+
+The code includes access control, DTO validation, database constraints, migrations and transactional booking locking. Public operation still needs reliable local backups, monitoring, updates and an operational review. The `tunnel` profile trusts only the loopback agent and forces Secure session cookies; use the public HTTPS URL in this mode. Ordinary local-only development keeps its regular profile. Do not disable Secure cookies or widen proxy trust to work around a login issue.
 
 GitHub Actions in [.github/workflows/verify.yml](.github/workflows/verify.yml) runs Java 17 tests with H2 and disposable PostgreSQL 17, then checks/tests the dependency-free JavaScript with Node 24. Its test database is unrelated to local or cloud application data. Render automatic deployment is disabled; a maintainer must review verification before deploying a commit.
 
